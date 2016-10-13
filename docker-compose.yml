@@ -1,0 +1,14 @@
+version: '2'
+services:
+  nprobe:
+    build: nprobe
+    ports:
+      - "2055:2055/udp"
+  ntopng:
+    build: ntopng
+    ports:
+      - "3000:3000"
+    environment:
+      PROBE_PORT: tcp://nprobe:1234
+    links:
+      - nprobe
