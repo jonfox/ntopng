@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  nprobe:
+    build: nprobe
+    hostname: nprobe
+    restart: always
+    ports:
+    - "2055:2055/udp"
+
+  ntopng:
+    build: ntopng
+    hostname: ntopng
+    restart: always
+    ports:
+    - "3000:3000"
+    volumes:
+    - ntopng-data:/data
+    environment:
+      PROBE_PORT: tcp://nprobe:1234
+    depends_on:
+    - nprobe
+
+volumes:
+  ntopng-data:
+

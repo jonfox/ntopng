@@ -1,17 +1,24 @@
 FROM ubuntu:16.04
+MAINTAINER Jon Fox <jon@fox.name>
 
-USER root
+RUN groupadd -r ntopng && useradd -r -g ntopng ntopng
 
-RUN apt-get update && apt-get -qy install lsb-release
-ADD http://packages.ntop.org/ubuntu/16.04/all/apt-ntop-stable/apt-ntop-stable.deb /apt-ntop-stable.deb
-RUN dpkg -i apt-ntop-stable.deb
-RUN rm -rf /apt-ntop-stable.deb
+ADD http://apt-stable.ntop.org/16.04/all/apt-ntop-stable.deb /apt-ntop-stable.deb
 
-RUN apt-get update
-RUN apt-get -qy install ntopng redis-server
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apt-get update && \
+    apt-get -qy install lsb-release && \
+    dpkg -i /apt-ntop-stable.deb && \
+    apt-get update && \
+    apt-get -qy install redis-server ntopng && \
+    apt-get clean && \
+    rm -rf /apt-ntop-stable.deb /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN mkdir /data && \
+    chown ntopng:ntopng /data
 
 EXPOSE 3000
+
+VOLUME /data
 
 ADD entrypoint.sh /entrypoint.sh
 
